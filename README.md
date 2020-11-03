@@ -1,6 +1,6 @@
 # TRGN_510_FinalProject
 <h3>Title:
-<h4>"Breast Cancer Diagnosis using KNN".
+<h4>"Differential Expression analysis of Bronchus and Lung cancer genes between males of white and african american ethnicities".
 
 <h3>Author:
 <h4>Aastha Yatin Dave
@@ -9,23 +9,16 @@
 <h4>davea@usc.edu
 
 <h3>Overview :
-  <h4>The aim of this project is to classify malignant and benign tumors from Breast cancer Wisconsin (Diagnostic) dataset using machine learning algorithm KNN.
-K-nearest neighbor algorithm is a machine learning algorithm which recognizes pattern to classify the data. 
-KNN is normally used for classification and regression and here we are classifying the Breast Cancer data. We are training the model to predict based on the data input whether the cells are Benign or malignant without having to take a look under microscope. Here k is a user defined constant and is based on the distance from the query points.
-   For training the model we are taking major part of the dataset (80%) and the rest is used for testing the model. This could automate the process of diagniosis of cancer. I will try to make a machine learning model that can predict the type of cancer with maximum possible accuracy. 
-
+  <h4>The aim of this project is to identify the differential expression of genes in Bronchus and Lung cancer between people who are identified as white and african american.All the patients are diagnosed with adenomas and adenocarcinomas. I will be using Bioconductor packages (Limma, Glimma, egdeR) to analyze the RNA Seq data. 
+   The reference Vignette: https://www.bioconductor.org/packages/devel/workflows/vignettes/RNAseq123/inst/doc/limmaWorkflow.html
 <h3>Data: 
-<h4> Breast Cancer Wisconsin (Diagnostic) Dataset 
-This data set can be downloaded from UCI machine learning repository. 
-https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29 
-This data set contains :
-569 observations with 32 variables. 
-
+<h4> The data is obtained from : https://portal.gdc.cancer.gov/repository?facetTab=cases&filters=%7B%22op%22%3A%22and%22%2C%22content%22%3A%5B%7B%22content%22%3A%7B%22field%22%3A%22cases.case_id%22%2C%22value%22%3A%5B%22set_id%3AvpGcj3UB-W348b5h03Fy%22%5D%7D%2C%22op%22%3A%22IN%22%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22cases.demographic.gender%22%2C%22value%22%3A%5B%22male%22%5D%7D%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22cases.primary_site%22%2C%22value%22%3A%5B%22bronchus%20and%20lung%22%5D%7D%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22cases.project.project_id%22%2C%22value%22%3A%5B%22TCGA-LUAD%22%5D%7D%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22files.analysis.workflow_type%22%2C%22value%22%3A%5B%22HTSeq%20-%20Counts%22%5D%7D%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22files.data_category%22%2C%22value%22%3A%5B%22transcriptome%20profiling%22%5D%7D%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22files.data_format%22%2C%22value%22%3A%5B%22txt%22%5D%7D%7D%5D%7D
+  
 <h3>Milestone1:
-<h4> To find out how many are benign and malignant cases in the dataset and whether any columns are empty. Check if there is any data which is not required and remove it from the dataset. This might create overfitting of data which might impact negatively on the performance of the model. Since all the data in all the columns are in different scale, normalize the data and bring the value between 0 and 1. 
+<h4> I will filter out and download the data from the GDC portal. 20 samples of white males and 20 samples of african american males. Load the data into R. Set up R and carry out data packaging. 
 
 <h3>Milestone2:
-<h4>To prepare data for training and testing set. Use KNN function and try to find out the value of k which gives higher accuracy. Perform confusion matrix and find out the performance of the model. Calculate the accuracy of the model. 
-
+<h4> Normalize the data and perform differential expression analysis. Represent the results using graphical representations.  
+  
 <h3>Deliverables:
 <h4> R Markdown
