@@ -1,0 +1,78 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install()
+```
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("limma")
+
+BiocManager::install("Glimma")
+
+BiocManager::install("edgeR")
+library(limma)
+library(Glimma)
+library(edgeR)
+```
+
+
+```{r}
+setwd("/Users/aasthadave/desktop/Final510/txt")
+```
+
+```{r}
+files <- c("00ea21cb-349a-40c2-ad34-c36e18dcd02f.htseq.counts.txt", "37616fc4-9761-47f8-a819-9a9ed6564b21.htseq.counts.txt","2cea6dae-c807-428b-90c8-617b260d3975.htseq.counts.txt", "a24d07c0-9b91-4538-96d2-f97544f4dbb0.htseq.counts.txt","3fbc019c-2a61-48f6-9c6d-00823297ae53.htseq.counts.txt",   "a059cf08-5046-4a79-a82f-c07da2955035.htseq.counts.txt","3ce57f19-ef4b-4bb9-8530-eb0752975f4b.htseq.counts.txt", "b92498c2-6e54-4fd0-b752-18932e915381.htseq.counts.txt",
+           "5d259206-1431-48f8-abc3-3001bab5243d.htseq.counts.txt", "a22817b9-da0e-45cd-ba5d-3eb790e273cb.htseq.counts.txt",
+           "6ac1dbcf-93f8-4057-9220-201efde2e705.htseq.counts.txt", "c58c1851-be04-4875-96ff-2833bb6af91c.htseq.counts.txt",
+           "9f64d4a4-e4ad-4ee1-89a1-049b78956bcb.htseq.counts.txt", "ac3af473-48c0-4fb1-9f31-56ba6fa744c1.htseq.counts.txt",
+           "8c9a74f3-0562-4d9d-a0e6-27a151d5a534.htseq.counts.txt", "c9381f51-ec09-4487-88a4-8e94452e4893.htseq.counts.txt",
+           "23e87533-2220-4b0d-b3e2-43707cb25858.htseq.counts.txt", "c71da743-de94-46d0-9ec0-fed1574845b9.htseq.counts.txt",
+           "8eb179a6-a0af-4628-aae2-78800db3e9d8.htseq.counts.txt", "daefaee3-eb0e-4cf8-8807-f544128345e7.htseq.counts.txt",
+           "59e22196-c04d-46c9-b16f-98858dca67d1.htseq.counts.txt", "d31beca5-e987-4def-906a-63f68ecc5c7a.htseq.counts.txt",
+           "9dd22540-6908-447a-bc26-2da5522f68b6.htseq.counts.txt", "e5ea329f-8042-479c-b8ff-fb752b6b44e0.htseq.counts.txt",
+           "68acaa5e-6a27-499f-925d-710af9d30710.htseq.counts.txt", "e158cf09-9e8a-4a3f-9097-2f94222e5461.htseq.counts.txt",
+           "12d2b9fa-1921-4033-bdb9-7e114c0d7812.htseq.counts.txt", "e38ee2d6-eaad-4d39-a7f3-951b1532c9e5.htseq.counts.txt",
+           "314b3b08-27e7-4936-a7d9-2dce4e4d3db7.htseq.counts.txt", "f9d52f9e-4f82-431a-a427-1c1259b8e765.htseq.counts.txt",
+           "98fcd5aa-3b1a-4980-a65f-c44a8c070101.htseq.counts.txt", "e77c14e1-1e3f-4f01-992c-b1e68c365005.htseq.counts.txt",
+           "545df815-3b73-42f4-9540-457f01e43f07.htseq.counts.txt", "fc867c2d-8e5d-4e2a-80b2-48be873efc56.htseq.counts.txt",
+           "631fc20d-00c1-4b13-8520-f25f0388e985.htseq.counts.txt", "ebe06b50-91d3-4a79-bc8f-6564742c1652.htseq.counts.txt",
+           "1916f968-78bb-4ac4-8ddf-0585132076a9.htseq.counts.txt", "fc1963bb-e709-467b-950f-0177512ba35e.htseq.counts.txt",
+           "18860abf-6fac-490b-8bf2-b906ac1422a4.htseq.counts.txt", "fe232ef7-4d50-4dfc-bea1-6b6a7a3e4135.htseq.counts.txt")
+```
+
+```{r}
+read.delim(files[1], nrow=5)
+```
+
+```{r}
+x <- readDGE(files, columns=c(1,2))
+class(x)
+dim(x)
+```
+
+```{r}
+samplenames <- colnames(x)
+colnames(x) <- samplenames
+```
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
