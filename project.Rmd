@@ -1,0 +1,332 @@
+---
+title: "Lung Cancer Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+My project is aiming to do differential analysis of genes in lung cancer male patients between Afican Americans and whites ethnicities. Here I am using RNA Seq 123 vignette to follow the instructions. We are going to use different packages as and when required in the following code. A quick overview from the vigentte for the functionality of these packages are given below.
+-> edgeR - limma workflow for analysing RNA-seq data that takes gene-level counts as its input, and moves through pre-processing and exploratory data analysis      before obtaining lists of differentially expressed (DE) genes. 
+-> This analysis is enhanced through the use of interactive graphics from the Glimma package, that allows for a more detailed exploration of the data at both the sample and gene-level than is possible using static R plots and (Homo.sapiens) package used for ENSEMBL gene annotations. 
+-> We require to install biomanager packagae in order to download limma, Glimma and edgeR. 
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install()
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("limma")
+BiocManager::install("Glimma")
+BiocManager::install("edgeR")
+BiocManager::install("Homo.sapiens")
+BiocManager::install("heatmap.plus")
+library(limma)
+library(Glimma)
+library(edgeR)
+library(Homo.sapiens)
+```
+* DATA PACKAGING
+-> READING IN COUNT DATA
+
+Setting up the working directory. All the files to be uploaded should be here.
+
+```{r}
+setwd("/Users/aasthadave/desktop/Final510/txt")
+```
+The htseq counts files downloaded from National Cancer Institute's Genomic Data Commons (GDC) portal. The files are filetered based on the requirement. Here each 
+file contains the data of lung cancer male of either African American or White ethnicity. 
+```{r}
+files <- c("6476b6b8-7e7e-44ac-9869-c93b654458a5.htseq.counts.txt", "7ea958f2-f45d-4549-9d45-07c51eebae99.htseq.counts.txt",
+           "4f361433-9254-4f3e-9e1b-39d665e17398.htseq.counts.txt", "6d53bf05-58d4-4633-b2da-0dd71d89ee91.htseq.counts.txt",
+           "7f73a1b0-8b36-425c-90d6-c1daf18e4a18.htseq.counts.txt", "9f64d4a4-e4ad-4ee1-89a1-049b78956bcb.htseq.counts.txt",
+           "19f441a5-6db0-4ea3-8241-728b5e3fb86a.htseq.counts.txt", "59e22196-c04d-46c9-b16f-98858dca67d1.htseq.counts.txt",
+           "68acaa5e-6a27-499f-925d-710af9d30710.htseq.counts.txt", "314b3b08-27e7-4936-a7d9-2dce4e4d3db7.htseq.counts.txt",
+           "994ba708-9a28-4e86-8dc0-f3626cb26b1e.htseq.counts.txt", "37616fc4-9761-47f8-a819-9a9ed6564b21.htseq.counts.txt",
+           "11180707-ca2c-4933-bb99-df496bffcafb.htseq.counts.txt", "a059cf08-5046-4a79-a82f-c07da2955035.htseq.counts.txt",
+           "a571b078-2572-4b5a-b9be-52ad05085e1c.htseq.counts.txt", "ac3af473-48c0-4fb1-9f31-56ba6fa744c1.htseq.counts.txt",
+           "c71da743-de94-46d0-9ec0-fed1574845b9.htseq.counts.txt", "ce786209-c77d-47e0-95a6-20c036bed8b3.htseq.counts.txt",
+           "f204f6b8-03fb-4464-922d-de9fffeff9d5.htseq.counts.txt", "f561e8fc-3ed9-4d8f-be9f-800966251738.htseq.counts.txt",
+           "90af0faf-3e8c-4741-bf49-f87a5b21d54c.htseq.counts.txt", "16c42b24-fcaf-43e2-8f52-d7488f82257b.htseq.counts.txt", "7b3fca6d-8886-46b4-99fa-cc87e6790c9f.htseq.counts.txt", "9d7486ce-efb9-413f-80b1-e47971625875.htseq.counts.txt", "43b969ef-d7cb-4c8d-b6de-fdfa48b8edff.htseq.counts.txt", "8377de42-868b-4748-bbe0-b66827e274bf.htseq.counts.txt",
+           "96717cca-f561-43ee-8fac-74c9aa43c202.htseq.counts.txt", "a24d07c0-9b91-4538-96d2-f97544f4dbb0.htseq.counts.txt",
+           "ac5bc405-b210-4bf3-a4e6-6ff071aa59c7.htseq.counts.txt", "ae3d90f2-e69b-4711-8e09-368c732cdc23.htseq.counts.txt",
+           "b32ed1d3-c9f1-42c7-ad2a-32794591a839.htseq.counts.txt", "bf8dd7a7-37b1-4a81-9554-d63fdf2fe4f1.htseq.counts.txt",
+           "c9381f51-ec09-4487-88a4-8e94452e4893.htseq.counts.txt", "daefaee3-eb0e-4cf8-8807-f544128345e7.htseq.counts.txt",
+           "dd5e64ab-9ed8-4259-9d68-598853fa41f4.htseq.counts.txt", "ebe06b50-91d3-4a79-bc8f-6564742c1652.htseq.counts.txt",
+           "f67ccdd6-1577-45fd-9e49-251b289d1179.htseq.counts.txt", "fe232ef7-4d50-4dfc-bea1-6b6a7a3e4135.htseq.counts.txt")
+read.delim(files[1], nrow=5, header=FALSE)
+```
+
+Using the readDGE option offered by edgeR, the DGEList-object contains a matrix of counts with 20524  rows associated with ENSEMBL ID's  and 40 columns associated with the individual samples.  
+```{r}
+x <- readDGE(files, columns=c(1,2))
+
+class(x)
+
+```
+
+```{r}
+dim(x)
+```
+
+-> ORGANIZING SAMPLE INFORMATION
+We are diving the sample into two groups here. 
+
+```{r}
+samplenames <- colnames(x)
+colnames(x) <- samplenames
+
+group <- c(rep("Whites", 20), rep("African_Americans", 20 ))  
+Gender <- c("Female", "Female", "Male", "male", "male", "male", "male", "male", "male", "male",
+                "male", "high", "male", "male", "male", "high", "male", "male", "male", "high",
+                "Female", "Female", "Female", "Female", "Female", "male", "male", "male", "male", "male",
+                "high", "male", "high", "male", "male", "male", "male", "male", "high", "male")
+x$samples$Gender <- Gender
+
+x$samples$group <- group 
+x$samples
+```
+Since the ENSEMBL IDs are present in Homo.sapiens library with a suffix after '.'. We want to remove the suffix after the '.'. We use regular expression in our next step along with gsub function. 
+
+```{r}
+geneid <- rownames(x)
+geneid <-gsub("\\.[0-9]*$","", geneid)
+head(geneid)
+```
+-> ORGANIZING GENE ANNOTATIONS 
+
+The ENSEMBL gene IDs in our dataset were annotated using Homo.sapiens package to retrieve the associated information like gene symbol and chromosome numbers. 
+
+```{r}
+genes <- select(Homo.sapiens, keys=geneid, columns=c("SYMBOL", "TXCHROM"), 
+                keytype="ENSEMBL")
+head(genes)
+```
+There can be genes that can map to multiple chromosomes. For eg, a gene XYZ may stretch from chr1 and chr4. Hence the gene will show up in both the chromosomes. To avoid this duplication, either we can select one of the chromosome to associate this gene or choose the chromosome where it appears first. Here we are using the latter option. 
+```{r}
+genes <- genes[!duplicated(genes$ENSEMBL),]
+x$genes <- genes
+x
+```
+
+* DATA PREPROCESSING 
+-> TRANSFORMATIONS FROM A RAW SCALE 
+
+The data is transformed in a more usable form. We calculate counts per milllion (CPM) and log of counts per million (LCPM):
+```{r}
+cpm <- cpm(x)
+lcpm <- cpm(x, log=TRUE)
+
+L <- mean(x$samples$lib.size) * 1e-6
+M <- median(x$samples$lib.size) * 1e-6
+c(L, M)
+
+summary(lcpm)
+```
+We remove the malely expressed genes which might reduce the specificty of our program. By running the following code we have segragated the lowly expressed genes. 
+
+
+```{r}
+table(rowSums(x$counts==0)==9)
+#expression less than 10 
+```
+To filter out these lowly expressed gene we use the following code. Here we see the number of gene counts has reduced from 59958 to 20524. 
+
+```{r}
+keep.exprs <- filterByExpr(x, group=group)
+x <- x[keep.exprs,, keep.lib.sizes=FALSE]
+#filtered number of genes
+dim(x)
+```
+The graphical representation of unfiltered data is shown below:
+```{r}
+lcpm.cutoff <- log2(10/M + 2/L)
+library(RColorBrewer)
+nsamples <- ncol(x)
+col <- brewer.pal(nsamples, "Paired")
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
+title(main="A. Raw data", xlab="Log-cpm")
+abline(v=lcpm.cutoff, lty=3)
+for (i in 2:nsamples){
+  den <- density(lcpm[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+legend("topright", samplenames, text.col=col, bty="n")
+```
+The graphical representation of filtered data is as given below: 
+```{r}
+lcpm <- cpm(x, log=TRUE)
+plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
+
+title(main="B. Filtered data", xlab="Log-cpm")
+
+abline(v=lcpm.cutoff, lty=3)
+
+for (i in 2:nsamples){
+  den <- density(lcpm[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+legend("topright", samplenames, text.col=col, bty="n")
+```
+
+Normalisation is required to ensure that the expression distributions of each sample are similar across the entire experiment. Here we use the method of Trimmed mean of M values and or that we use the function of calcNormFactors from edgeR package. 
+```{r}
+#normalizing gene expression distributions
+x <- calcNormFactors(x, method = "TMM")
+x$samples$norm.factors
+```
+
+The graphical representation of unnormalized data 
+
+```{r}
+x2 <- x
+x2$samples$norm.factors <- 1
+x2$counts[,1] <- ceiling(x2$counts[,1]*0.05)
+x2$counts[,2] <- x2$counts[,2]*5
+par(mfrow=c(1,2))
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, col=col, main="")
+title(main="A. Unnormalised data",ylab="Log-cpm")
+
+```
+The Graphical representation of normalzed data and we see visible difference in the graph. 
+
+```{r}
+x2 <- calcNormFactors(x2)  
+x2$samples$norm.factors
+```
+
+
+```{r}
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, col=col, main="")
+title(main="B. Normalised data",ylab="Log-cpm")
+```
+THere are two plots here. 1. whites vs African Americans and the other one is between Males and Females 
+
+```{r}
+#unsupervised clustering of samples
+lcpm <- cpm(x, log=TRUE)
+par(mfrow=c(1,2))
+levels(group) <-  brewer.pal(nlevels(group), "Set1")
+col.group <- as.character(group)
+col.group <- c("red","blue")[group]
+plotMDS(lcpm, labels=group, col=col.group)
+
+title(main="A. Lung Cancer (Whites vs African_Americans")
+col.Gender <- Gender
+
+levels(col.Gender) <-  brewer.pal(nlevels(col.Gender), "Set2")
+col.Gender <- as.character(col.Gender)
+
+col.Gender <- c("red","blue")[Gender]
+plotMDS(lcpm, labels=Gender, col=col.Gender, dim=c(3,4))
+title(main="B. Gender based classifications")
+```
+For differential Expression analysis we create the design matrix as follwos 
+```{r}
+#DE analysis
+design <- model.matrix(~0+group+Gender)
+colnames(design) <- gsub("group", "", colnames(design))
+design
+```
+
+Storing the contrast 
+```{r}
+contr.matrix <- makeContrasts(
+  Whites.vs.African_Americans = Whites-African_Americans, 
+  levels = colnames(design))
+contr.matrix
+```
+Removing heteroscedascity from count data
+Voom converts raw counts to log CPM values using limma package.THe graph represents the trend with unnormalized data.
+```{r}
+#Removing heteroscedascity from count data
+
+par(mfrow=c(1,2))
+v <- voom(x, design, plot=TRUE)
+v
+```
+Here the praph represents voom with normalized data. We get a straight line. 
+```{r}
+vfit <- lmFit(v, design)
+vfit <- contrasts.fit(vfit, contrasts=contr.matrix)
+efit <- eBayes(vfit)
+plotSA(efit, main="Final model: Mean-variance trend")
+```
+We get the summary of genes which shows the number of genes that are upregulated and downregulated. 
+
+```{r}
+#Examining the number of DE genes
+summary(decideTests(efit))
+```
+We adjust the lfc - logFC value for the better results of filtering out genes that are up and down regulated. 
+```{r}
+tfit <- treat(vfit, lfc=0.04)
+dt <- decideTests(tfit)
+summary(dt)
+```
+
+```{r}
+de.common <- which(dt[,1]!=0)
+length(de.common)
+```
+Graphical representation as Venn diagram to represent the differentially expressed genes among the normal genes. 
+```{r}
+head(tfit$genes$SYMBOL[de.common], n=20)
+vennDiagram(dt[,1], circle.col=c("purple"))
+write.fit(tfit, dt, file="results.txt")
+```
+
+```{r}
+#Examining individual DE genes from top to bottom
+
+Whites.vs.African_Americans <- topTreat(tfit, coef=1, n=Inf)
+head(Whites.vs.African_Americans)
+```
+
+```{r}
+#Useful graphical representations of differential expression results
+
+plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], 
+       xlim=c(-8,13))
+#glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1],
+#         side.main="ENSEMBL", counts=lcpm, groups=group, launch=FALSE)
+```
+Finally the heatmap for the Differentially expressed genes. The heatmap.plus fuction has been used since we are dealing with larger datasets. The Blue color represents the upregulated genes and white color represents the down regulated genes.
+```{r}
+library(gplots)
+library(heatmap.plus)
+
+Whites.vs.African_Americans.topgenes <- Whites.vs.African_Americans$ENSEMBL[1:100]
+i <- which(v$genes$ENSEMBL %in% Whites.vs.African_Americans.topgenes)
+mycol <- colorpanel(100,"white","black","Blue")
+par(cex.main=0.8,mar=c(1,1,1,1))
+heatmap.plus(lcpm[i,],  scale="row", labRow=v$genes$SYMBOL[i], labCol=group, col=mycol, cexRow=1,cexCol=0.2, margins = c(8,6), main="HeatMap")
+
+```
+ 
+Gene set testing with camera : 
+It uses Limma package and the camera function is used to check which genes are highly ranked. 
+
+```{r}
+load("human_c2_v5p2.rdata")
+idx <- ids2indices(Hs.c2, rownames(v$genes))
+cam.Whites.vs.African_Americans <- camera(v,idx,design,contrast=contr.matrix[,1])
+head(cam.Whites.vs.African_Americans,6)
+barcodeplot(efit$t[,1], index=idx$LIM_MAMMARY_LUMINAL_MATURE_UP, 
+            index2=idx$LIM_MAMMARY_LUMINAL_MATURE_DN, main="Whites.vs.African_Americans")
+```
+
+
+
+
+```{r}
+sessionInfo()
+```
+
